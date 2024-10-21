@@ -6,9 +6,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 import org.apache.tomcat.util.modeler.modules.ModelerSource;
 
+import com.unu.proyectoweb1.beans.Autor;
 import com.unu.proyectoweb1.models.Autoresmodel;
 
 /**
@@ -25,9 +32,9 @@ public class AutoresController extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	if(request.getParameter("op")==null) {
-    		//Listar 
+    		listar(request,response); 
     		return;
     	}
     	String operacion=request.getParameter("op");
@@ -43,9 +50,23 @@ public class AutoresController extends HttpServlet {
     	}
     }
     
-    private void listar(HttpServletRequest request, HttpServletResponse response) {
+    private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
     	request.setAttribute("listaAutores", modelo.listarAutores());
-		request.getRequestDispatcher("/autores/listaAutores.jsp");
+    	Iterator<Autor>it=modelo.listarAutores().iterator();
+    	while (it.hasNext()) {
+			Autor a=it.next();
+			System.out.println(a.getIdAutor()+" "+a.getNacionalidad()+" "+a.getNombre());
+			
+		}
+		request.getRequestDispatcher("/autores/listaAutores.jsp").forward(request, response);
+    	/*try {
+    		request.setAttribute("listaAutores", modelo.listarAutores());
+    		request.getRequestDispatcher("/autores/listaAutores.jsp");
+		} catch (ServletException | IOException ex) {
+			// TODO: handle exception
+			Logger.getLogger(AutoresController.class.getName()).log(Level.SEVERE,null,ex);
+		}*/
     }
 
 	/**
@@ -53,7 +74,7 @@ public class AutoresController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		processRequest(request, response);
 	}
 
 	/**
@@ -61,7 +82,7 @@ public class AutoresController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		processRequest(request, response);
 	}
 
 }
